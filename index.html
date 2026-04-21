@@ -117,7 +117,7 @@ document.getElementById("quizForm").addEventListener("submit", function(e){
   const punteggio = corrette - sbagliate - nonrisposte;
   const percentuale = Math.round((corrette / questions.length) * 100);
 
-  fetch(" https://script.google.com/macros/s/AKfycbw9OhmO2fF7I4Bb8jpcxrXy0YMNG9_y-3-v5-_p2pEylo7WOOhnHO0Rxx_v6XkDrOhG/exec, {
+  fetch("https://script.google.com/macros/s/AKfycbw9OhmO2fF7I4Bb8jpcxrXy0YMNG9_y-3-v5-_p2pEylo7WOOhnHO0Rxx_v6XkDrOhG/exec", {
     method: "POST",
     contentType: "application/json",
     body: JSON.stringify({

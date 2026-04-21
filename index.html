@@ -16,7 +16,7 @@ button { padding: 12px 20px; font-size: 18px; cursor: pointer; }
 <div class="container">
 
 <h2>TEST BICI ELETTRICHE – 20 DOMANDE</h2>
-<p><strong>Tempo disponibile:</strong> <span id="timer">10:00</span></p>
+<p><strong>Tempo disponibile:</strong> <span id="timer">7:00</span></p>
 
 <form id="quizForm">
 
@@ -28,10 +28,17 @@ button { padding: 12px 20px; font-size: 18px; cursor: pointer; }
 <input type="text" id="cognome" required><br><br>
 
 <label>Punto Vendita:</label><br>
-<input type="text" id="puntovendita" required><br><br>
-
-<label>Codice Test:</label><br>
-<input type="text" id="codice" required><br><br>
+<select id="puntovendita" required>
+  <option value="">Seleziona...</option>
+  <option value="FANO">FANO</option>
+  <option value="MONSANO">MONSANO</option>
+  <option value="OSIMO">OSIMO</option>
+  <option value="MACERATA">MACERATA</option>
+  <option value="CIVITANOVA">CIVITANOVA</option>
+  <option value="PESARO">PESARO</option>
+  <option value="FOLIGNO">FOLIGNO</option>
+</select>
+<br><br>
 
 <hr><br>
 
@@ -110,11 +117,10 @@ document.getElementById("quizForm").addEventListener("submit", function(e){
   const punteggio = corrette - sbagliate - nonrisposte;
   const percentuale = Math.round((corrette / questions.length) * 100);
 
-  fetch("https://script.google.com/macros/s/AKfycbw9OhmO2fF7I4Bb8jpcxrXy0YMNG9_y-3-v5-_p2pEylo7WOOhnHO0Rxx_v6XkDrOhG/exec", {
+  fetch(" https://script.google.com/macros/s/AKfycbw9OhmO2fF7I4Bb8jpcxrXy0YMNG9_y-3-v5-_p2pEylo7WOOhnHO0Rxx_v6XkDrOhG/exec, {
     method: "POST",
     contentType: "application/json",
     body: JSON.stringify({
-      codice: document.getElementById("codice").value,
       nome: document.getElementById("nome").value,
       cognome: document.getElementById("cognome").value,
       puntovendita: document.getElementById("puntovendita").value,

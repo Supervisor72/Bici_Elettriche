@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<title>Test Bici Elettriche</title>
+<style>
+body { font-family: Arial; margin: 20px; }
+.container { max-width: 900px; margin: auto; }
+.question { margin-bottom: 20px; padding: 15px; border: 1px solid #ccc; border-radius: 8px; }
+button { padding: 12px 20px; font-size: 18px; cursor: pointer; }
+#timer { font-size: 22px; font-weight: bold; color: #d9534f; }
+</style>
+</head>
+
+<body>
+<div class="container">
+
+<h2>TEST BICI ELETTRICHE – 20 DOMANDE</h2>
+<p><strong>Tempo disponibile:</strong> <span id="timer">10:00</span></p>
+
+<form id="quizForm">
+
+<!-- DATI PERSONALI -->
+<label>Nome:</label><br>
+<input type="text" id="nome" required><br><br>
+
+<label>Cognome:</label><br>
+<input type="text" id="cognome" required><br><br>
+
+<label>Punto Vendita:</label><br>
+<input type="text" id="puntovendita" required><br><br>
+
+<label>Codice Test:</label><br>
+<input type="text" id="codice" required><br><br>
+
+<hr><br>
+
+<div id="questions"></div>
+
+<button type="submit">Invia Test</button>
+
+</form>
+</div>
+
+<script>
+// TIMER 7 MINUTI
+let time = 420;
+const timerEl = document.getElementById("timer");
+
+setInterval(() => {
+  let min = Math.floor(time / 60);
+  let sec = time % 60;
+  timerEl.textContent = `${min}:${sec < 10 ? "0"+sec : sec}`;
+  if (time > 0) time--;
+  else document.getElementById("quizForm").submit();
+}, 1000);
+
+// DOMANDE
+const questions = [
+  {q:"Qual è la potenza massima consentita per legge per una e‑bike in Italia?", a:["250W","350W","500W","750W"], c:0},
+  {q:"Qual è la velocità massima assistita consentita per legge?", a:["20 km/h","25 km/h","30 km/h","35 km/h"], c:1},
+  {q:"Quale unità misura la capacità della batteria?", a:["Volt","Ampere","Ampere/ora (Ah)","Watt"], c:2},
+  {q:"Quale unità misura l’energia totale della batteria?", a:["Volt","Wattora (Wh)","Ampere","Newton"], c:1},
+  {q:"Quale tipo di freno garantisce la frenata più efficace?", a:["V-Brake","Tamburo","Disco meccanico","Disco idraulico"], c:3},
+  {q:"Quale ruota offre maggiore stabilità alle alte velocità?", a:["20”","24”","26”","28”"], c:3},
+  {q:"Quale ruota è più adatta a percorsi cittadini con curve strette?", a:["20”","26”","27.5”","28”"], c:0},
+  {q:"Quale componente permette di cambiare la modalità di assistenza?", a:["Batteria","Display","Motore","Caricatore"], c:1},
+  {q:"Quale autonomia è tipica di una batteria da 36V 10Ah?", a:["10–15 km","20–25 km","35–45 km","70–90 km"], c:2},
+  {q:"Quale motore offre la migliore resa in salita?", a:["Anteriore","Centrale","Posteriore","A rullo"], c:1},
+  {q:"Quale tipo di bici è più adatta a terreni sterrati?", a:["City","Fat bike","Pieghevole","Urban"], c:1},
+  {q:"Quale tipo di bici è più indicato per il pendolarismo urbano?", a:["Fat bike","Trekking","City bike","MTB elettrica"], c:2},
+  {q:"Quale elemento influisce maggiormente sul peso della bici?", a:["Display","Batteria","Campanello","Cavalletto"], c:1},
+  {q:"Quale componente richiede più manutenzione nel tempo?", a:["Telaio","Freni","Manubrio","Sellino"], c:1},
+  {q:"Quale vantaggio offre una bici elettrica pieghevole?", a:["Autonomia","Velocità","Trasporto facile","Frenata migliore"], c:2},
+  {q:"Quale tensione è più comune nelle batterie delle e‑bike?", a:["12V","24V","36V","72V"], c:2},
+  {q:"Quale tipo di display offre più informazioni?", a:["LED","LCD","Analogico","Nessuno"], c:1},
+  {q:"Quale elemento NON influisce sull’autonomia?", a:["Peso ciclista","Tipo percorso","Pressione gomme","Colore bici"], c:3},
+  {q:"Quale velocità può raggiungere una e‑bike SENZA assistenza?", a:["Dipende dal ciclista","25 km/h","30 km/h","45 km/h"], c:0},
+  {q:"Quale componente permette di ricaricare la batteria?", a:["Motore","Caricatore","Display","Sensore PAS"], c:1}
+];
+
+// RANDOMIZZA DOMANDE
+questions.sort(() => Math.random() - 0.5);
+
+// GENERA HTML
+const qContainer = document.getElementById("questions");
+questions.forEach((item, index) => {
+  let div = document.createElement("div");
+  div.className = "question";
+  div.innerHTML = `<strong>${index+1}. ${item.q}</strong><br><br>` +
+    item.a.map((ans,i)=>`
+      <label><input type="radio" name="q${index}" value="${i}"> ${ans}</label><br>
+    `).join("");
+  qContainer.appendChild(div);
+});
+
+// INVIO RISPOSTE
+document.getElementById("quizForm").addEventListener("submit", function(e){
+  e.preventDefault();
+
+  let corrette = 0, sbagliate = 0, nonrisposte = 0;
+
+  questions.forEach((q,i)=>{
+    const sel = document.querySelector(`input[name="q${i}"]:checked`);
+    if(!sel) nonrisposte++;
+    else if(parseInt(sel.value) === q.c) corrette++;
+    else sbagliate++;
+  });
+
+  const punteggio = corrette - sbagliate - nonrisposte;
+  const percentuale = Math.round((corrette / questions.length) * 100);
+
+  fetch("INSERISCI_URL_WEBAPP", {
+    method: "POST",
+    contentType: "application/json",
+    body: JSON.stringify({
+      codice: document.getElementById("codice").value,
+      nome: document.getElementById("nome").value,
+      cognome: document.getElementById("cognome").value,
+      puntovendita: document.getElementById("puntovendita").value,
+      punteggio: punteggio,
+      percentuale: percentuale,
+      corrette: corrette,
+      sbagliate: sbagliate,
+      nonrisposte: nonrisposte
+    })
+  });
+
+  alert("Test inviato correttamente!");
+  location.reload();
+});
+</script>
+
+</body>
+</html>
